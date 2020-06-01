@@ -1,0 +1,95 @@
+---
+title: "Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = TRUE,
+	warning = TRUE
+)
+library(data.table)
+library(ggplot2)
+
+library(corrr)
+library(dplyr)
+
+# read final data
+preclean <- fread('../../gen/analysis/temp/preclean.csv')
+```
+
+## Some rudimentary analysis in Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.s
+
+When you click the **Knit** button in RStudio,a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+
+You can also **knit** the document from the command line, see the example in the `makefile`.
+
+
+### Summary statistics
+
+```{r}
+summary(preclean)
+```
+
+### Correlation table of Positivity, Negativity and Retweet count
+```{r}
+preclean %>% 
+   select(positivity,negativity,retweet_count) %>%  # or do negative or range selections here
+  
+   correlate() %>%
+   rearrange() %>%  # rearrange by correlations
+   shave() # Shave off the upper triangle for a cleaner result
+
+```
+### Plots
+```{r}
+# scatterplot with quadratic line of best fit
+ggplot(preclean, 
+       aes(x = positivity, 
+           y = retweet_count)) +
+  geom_point(color= "indianred1") +
+  geom_smooth(method = "lm", 
+              formula = y ~ poly(x, 2), 
+              color = "indianred3")+
+  labs(title="Quadratic line of best fit (positivity to retweet count)")+
+coord_cartesian(xlim = c(0, 1), ylim = c(0,600))+
+xlim(0.000001,100000)
+```
+
+```{r}
+# scatterplot with quadratic line of best fit
+ggplot(preclean, 
+       aes(x = negativity, 
+           y = retweet_count)) +
+  geom_point(color= "indianred1") +
+  geom_smooth(method = "lm", 
+              formula = y ~ poly(x, 2), 
+            color = "indianred3")+
+  labs(title="Quadratic line of best fit (negativity to retweet count)")+  
+coord_cartesian(xlim = c(0, 1), ylim = c(0,600))+
+xlim(0.000001,100000)
+
+```
+```{r}
+# plot the histogram with blue bars and white borders
+ggplot(preclean, aes(x = positivity)) +
+  geom_histogram(fill = "indianred3", 
+                 color = "black") + 
+  labs(title="Distribution of positivity",
+       x = "positivity")+
+  xlim(c(0.000001, 0.9))
+
+```
+```{r}
+# plot the histogram with blue bars and white borders
+ggplot(preclean, aes(x = negativity)) +
+  geom_histogram(fill = "indianred3", 
+                 color = "black") + 
+  labs(title="Distribution of negativity",
+       x = "negativity")+
+  
+  xlim(c(0.000001, 0.9))
+```
