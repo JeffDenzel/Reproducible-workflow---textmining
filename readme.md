@@ -1,6 +1,6 @@
 # A reproducible research workflow using JSON parsing and text mining in Python and analysis using R.
 
-This repository was made using the template found at https://github.com/hannesdatta/textmining-workflow
+
 
 The main aim of this repository is to have a clean and basic structure, which can be easily adjusted to use in an actual project. In this project, the following is done:
 - Pipeline stage "data-preparation"
